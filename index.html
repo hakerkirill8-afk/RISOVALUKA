@@ -179,6 +179,7 @@
             gap: 6px;
             flex: 1;
         }
+        /* ===== ПОЛЗУНОК — ТОНКАЯ ЛИНИЯ ВЕЗДЕ ===== */
         #sizeSlider {
             flex: 1;
             -webkit-appearance: none;
@@ -322,7 +323,7 @@
         .chat-input-bottom button:active { transform: scale(0.92); }
         .chat-input-bottom button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* ===== АДАПТАЦИЯ МЕНЮ И ЧАТА (БЕЗ ПОЛЗУНКА) ===== */
+        /* ===== АДАПТАЦИЯ МЕНЮ И ЧАТА ===== */
         @media (max-width: 600px) {
             .top-panel { padding: 4px 6px !important; }
             .row-1 { gap: 4px !important; }
@@ -338,6 +339,15 @@
             .row-3 .label { display: none !important; }
             .color-btn { width: 20px !important; height: 20px !important; }
             #sizeSlider { flex: 1 !important; min-width: 60px !important; }
+            /* ТЕЛЕФОН — ТОЛЬКО КРУЖОК БОЛЬШЕ, ЛИНИЯ ТОНКАЯ */
+            #sizeSlider::-webkit-slider-thumb {
+                width: 20px !important;
+                height: 20px !important;
+            }
+            #sizeSlider::-moz-range-thumb {
+                width: 20px !important;
+                height: 20px !important;
+            }
             #clearBtn { padding: 4px 12px !important; font-size: 12px !important; min-height: 24px !important; }
             #sizeLabel { font-size: 10px !important; min-width: 24px !important; }
 
