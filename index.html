@@ -210,7 +210,7 @@
         }
         #sizeSlider {
             flex: 1;
-            height: 4px;
+            height: 8px;
             -webkit-appearance: none;
             appearance: none;
             background: #2a2a3e;
@@ -218,20 +218,21 @@
             outline: none;
             touch-action: manipulation;
             min-width: 40px;
+            min-height: 30px; /* Чтобы легче попадать пальцем */
         }
         #sizeSlider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: #00ff88;
             cursor: pointer;
             touch-action: manipulation;
         }
         #sizeSlider::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: #00ff88;
             cursor: pointer;
@@ -361,7 +362,6 @@
         .chat-input-row button:active { transform: scale(0.92); }
         .chat-input-row button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* ===== ТЕЛЕФОН ===== */
         @media (max-width: 600px) {
             .top-panel { padding: 4px 6px !important; }
             .row-1 { gap: 4px !important; }
@@ -376,7 +376,7 @@
             .row-2 .label { display: none !important; }
             .row-3 .label { display: none !important; }
             .color-btn { width: 20px !important; height: 20px !important; }
-            #sizeSlider { flex: 1 !important; min-width: 60px !important; }
+            #sizeSlider { flex: 1 !important; min-width: 60px !important; min-height: 30px !important; }
             #clearBtn { padding: 4px 12px !important; font-size: 12px !important; min-height: 24px !important; }
             #sizeLabel { font-size: 10px !important; min-width: 24px !important; }
             .chat-panel { width: 100px !important; min-width: 70px !important; }
@@ -537,7 +537,7 @@
         }
 
         // ==========================================
-        // 4. РАЗМЕР
+        // 4. РАЗМЕР КИСТИ (С ПОДДЕРЖКОЙ ТЕЛЕФОНА)
         // ==========================================
         const sizeSlider = document.getElementById('sizeSlider');
         const sizeLabel = document.getElementById('sizeLabel');
@@ -547,10 +547,21 @@
             sizeLabel.textContent = brushSize + 'px';
         }
 
+        // Для мыши
         sizeSlider.addEventListener('input', updateBrushSize);
 
+        // Для телефона — обновляем при движении пальца
+        sizeSlider.addEventListener('touchmove', (e) => {
+            const val = parseInt(e.target.value);
+            brushSize = val;
+            sizeLabel.textContent = val + 'px';
+        }, { passive: true });
+
+        // Для телефона — чтобы палец не выходил
+        sizeSlider.addEventListener('touchstart', () => {}, { passive: true });
+
         // ==========================================
-        // 5. КООРДИНАТЫ
+        // 5. КООРДИНАТЫ (В ПРОЦЕНТАХ)
         // ==========================================
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -872,7 +883,7 @@
         setTimeout(resizeCanvas, 100);
         console.log('🎨 Рисовалка запущена!');
         console.log('🌐 Адрес: risovaluka-risovaluka.up.railway.app');
-        console.log('📱 Телефон — 3 строки меню!');
+        console.log('📱 Ползунок работает на телефоне!');
     </script>
 </body>
 </html>
