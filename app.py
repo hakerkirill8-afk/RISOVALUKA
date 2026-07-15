@@ -1,53 +1,37 @@
 import asyncio
 import json
 import websockets
-import datetime
+import os
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+import threading
 
 online_users = {}
-draw_rooms = {}  # room_id -> set of usernames
+draw_rooms = {}
 
 async def handler(websocket):
     username = None
     current_room = None
     
     try:
-        # Ждем приветствие
         msg = await websocket.recv()
         data = json.loads(msg)
         
         if data.get('type') == 'join':
             username = data.get('username', '').strip()
             if not username:
-                await websocket.send(json.dumps({
-                    'type': 'error',
-                    'message': 'Введите имя!'
-                }))
+                await websocket.send(json.dumps({'type': 'error', 'message': 'Введите имя!'}))
                 return
             
-            # Проверяем, не занято ли имя
             if username in online_users:
-                await websocket.send(json.dumps({
-                    'type': 'error',
-                    'message': 'Имя уже занято!'
-                }))
+                await websocket.send(json.dumps({'type': 'error', 'message': 'Имя уже занято!'}))
                 return
             
             online_users[username] = websocket
             print(f'[+] {username} вошел (онлайн: {len(online_users)})')
             
-            # Отправляем подтверждение
-            await websocket.send(json.dumps({
-                'type': 'connected',
-                'username': username
-            }))
-            
-            # Отправляем список комнат
-            await websocket.send(json.dumps({
-                'type': 'room_list',
-                'rooms': list(draw_rooms.keys())
-            }))
+            await websocket.send(json.dumps({'type': 'connected', 'username': username}))
+            await websocket.send(json.dumps({'type': 'room_list', 'rooms': list(draw_rooms.keys())}))
         
-        # Основной цикл
         async for message in websocket:
             try:
                 data = json.loads(message)
@@ -56,17 +40,11 @@ async def handler(websocket):
                 if msg_type == 'create_room':
                     room_id = data.get('room_id', '').strip().upper()
                     if not room_id:
-                        await websocket.send(json.dumps({
-                            'type': 'error',
-                            'message': 'Введите ID комнаты!'
-                        }))
+                        await websocket.send(json.dumps({'type': 'error', 'message': 'Введите ID комнаты!'}))
                         continue
                     
                     if room_id in draw_rooms:
-                        await websocket.send(json.dumps({
-                            'type': 'error',
-                            'message': f'Комната "{room_id}" уже существует!'
-                        }))
+                        await websocket.send(json.dumps({'type': 'error', 'message': f'Комната "{room_id}" уже существует!'}))
                         continue
                     
                     draw_rooms[room_id] = set([username])
@@ -78,14 +56,10 @@ async def handler(websocket):
                         'users': list(draw_rooms[room_id])
                     }))
                     
-                    # Оповещаем всех о новой комнате
                     for name, ws in online_users.items():
                         if name != username:
                             try:
-                                await ws.send(json.dumps({
-                                    'type': 'room_list',
-                                    'rooms': list(draw_rooms.keys())
-                                }))
+                                await ws.send(json.dumps({'type': 'room_list', 'rooms': list(draw_rooms.keys())}))
                             except:
                                 pass
                     
@@ -94,30 +68,22 @@ async def handler(websocket):
                 elif msg_type == 'join_room':
                     room_id = data.get('room_id', '').strip().upper()
                     if not room_id:
-                        await websocket.send(json.dumps({
-                            'type': 'error',
-                            'message': 'Введите ID комнаты!'
-                        }))
+                        await websocket.send(json.dumps({'type': 'error', 'message': 'Введите ID комнаты!'}))
                         continue
                     
                     if room_id not in draw_rooms:
-                        await websocket.send(json.dumps({
-                            'type': 'error',
-                            'message': f'Комната "{room_id}" не найдена!'
-                        }))
+                        await websocket.send(json.dumps({'type': 'error', 'message': f'Комната "{room_id}" не найдена!'}))
                         continue
                     
                     draw_rooms[room_id].add(username)
                     current_room = room_id
                     
-                    # Отправляем подтверждение
                     await websocket.send(json.dumps({
                         'type': 'room_joined',
                         'room_id': room_id,
                         'users': list(draw_rooms[room_id])
                     }))
                     
-                    # Оповещаем всех в комнате
                     for user in draw_rooms[room_id]:
                         if user in online_users and user != username:
                             try:
@@ -135,7 +101,6 @@ async def handler(websocket):
                     if current_room and current_room in draw_rooms:
                         draw_rooms[current_room].discard(username)
                         
-                        # Оповещаем остальных
                         for user in draw_rooms[current_room]:
                             if user in online_users:
                                 try:
@@ -149,20 +114,14 @@ async def handler(websocket):
                         
                         if len(draw_rooms[current_room]) == 0:
                             del draw_rooms[current_room]
-                            # Оповещаем всех об удалении комнаты
                             for name, ws in online_users.items():
                                 try:
-                                    await ws.send(json.dumps({
-                                        'type': 'room_list',
-                                        'rooms': list(draw_rooms.keys())
-                                    }))
+                                    await ws.send(json.dumps({'type': 'room_list', 'rooms': list(draw_rooms.keys())}))
                                 except:
                                     pass
                         
                         current_room = None
-                        await websocket.send(json.dumps({
-                            'type': 'room_left'
-                        }))
+                        await websocket.send(json.dumps({'type': 'room_left'}))
                         print(f'[🚪] {username} вышел из комнаты')
                 
                 elif msg_type == 'draw':
@@ -190,10 +149,7 @@ async def handler(websocket):
                         for user in draw_rooms[room]:
                             if user != username and user in online_users:
                                 try:
-                                    await online_users[user].send(json.dumps({
-                                        'type': 'clear',
-                                        'from': username
-                                    }))
+                                    await online_users[user].send(json.dumps({'type': 'clear', 'from': username}))
                                 except:
                                     pass
                 
@@ -213,10 +169,7 @@ async def handler(websocket):
                                     pass
                 
                 elif msg_type == 'get_rooms':
-                    await websocket.send(json.dumps({
-                        'type': 'room_list',
-                        'rooms': list(draw_rooms.keys())
-                    }))
+                    await websocket.send(json.dumps({'type': 'room_list', 'rooms': list(draw_rooms.keys())}))
                 
             except json.JSONDecodeError:
                 pass
@@ -227,24 +180,18 @@ async def handler(websocket):
         print(f'[!] {e}')
     finally:
         if username:
-            # Удаляем из онлайн
             if username in online_users:
                 del online_users[username]
                 print(f'[-] {username} вышел (онлайн: {len(online_users)})')
             
-            # Удаляем из комнат
             for room_id, users in list(draw_rooms.items()):
                 if username in users:
                     users.discard(username)
                     if len(users) == 0:
                         del draw_rooms[room_id]
-                        # Оповещаем всех об удалении комнаты
                         for name, ws in online_users.items():
                             try:
-                                await ws.send(json.dumps({
-                                    'type': 'room_list',
-                                    'rooms': list(draw_rooms.keys())
-                                }))
+                                await ws.send(json.dumps({'type': 'room_list', 'rooms': list(draw_rooms.keys())}))
                             except:
                                 pass
                     else:
@@ -259,14 +206,27 @@ async def handler(websocket):
                                 except:
                                     pass
 
+# ===== HTTP-СЕРВЕР ДЛЯ index.html =====
+def run_http():
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    handler = SimpleHTTPRequestHandler
+    httpd = HTTPServer(('0.0.0.0', 8000), handler)
+    print('🌐 HTTP сервер запущен на порту 8000')
+    httpd.serve_forever()
+
+# ===== ЗАПУСК ОБОИХ СЕРВЕРОВ =====
 async def main():
     print("========================================")
-    print("      🎨 РИСОВАЛКА (простая)")
-    print("========================================")
-    print("  http://localhost:8080")
+    print("      🎨 РИСОВАЛКА (Railway)")
     print("========================================")
     
+    # Запускаем HTTP-сервер в отдельном потоке
+    threading.Thread(target=run_http, daemon=True).start()
+    
+    # Запускаем WebSocket-сервер
     async with websockets.serve(handler, "0.0.0.0", 8080):
+        print("🔗 WebSocket сервер запущен на порту 8080")
+        print("🌐 Сайт доступен по адресу: https://risovaluka-risovaluka.up.railway.app")
         await asyncio.Future()
 
 if __name__ == "__main__":
