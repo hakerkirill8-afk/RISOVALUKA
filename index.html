@@ -403,8 +403,10 @@
         function connectWebSocket(addr) {
             return new Promise((resolve, reject) => {
                 try {
+                    // Определяем протокол
                     let protocol = 'wss://';
-                    if (window.location.protocol === 'http:') {
+                    // Если локально (localhost или 127.0.0.1) — используем ws://
+                    if (addr.includes('localhost') || addr.includes('127.0.0.1') || addr.includes('192.168.')) {
                         protocol = 'ws://';
                     }
                     const wsUrl = protocol + addr;
