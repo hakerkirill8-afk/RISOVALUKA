@@ -217,52 +217,6 @@
         }
         .chat-input-row button:hover:not(:disabled) { background: #00cc6a; }
         .chat-input-row button:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        @media (max-width: 700px) {
-            .top-panel { padding: 4px 8px; gap: 4px; }
-            .top-panel input { width: 60px; font-size: 10px; padding: 3px 6px; }
-            .top-panel button { font-size: 10px; padding: 3px 8px; }
-            .top-panel .logo-small { font-size: 14px; }
-            .top-panel .user-name { font-size: 11px; }
-            .top-panel #roomDisplay { font-size: 10px; min-width: 40px; }
-            .top-panel #onlineCount { font-size: 10px; }
-            .top-panel #statusText { font-size: 9px; }
-            .top-panel .sep { font-size: 12px; }
-            .color-btn { width: 16px; height: 16px; }
-            #sizeSlider { width: 50px; }
-            #sizeLabel { font-size: 9px; min-width: 18px; }
-            #clearBtn { font-size: 10px; padding: 2px 8px; }
-
-            .chat-panel { width: 130px; min-width: 90px; }
-            .chat-panel .chat-header { font-size: 10px; padding: 4px 8px; }
-            .chat-messages { font-size: 11px; padding: 4px 6px; }
-            .chat-input-row { padding: 4px 6px 8px; gap: 3px; }
-            .chat-input-row input { font-size: 11px; padding: 3px 8px; }
-            .chat-input-row button { font-size: 11px; padding: 3px 8px; }
-        }
-
-        @media (max-width: 480px) {
-            .top-panel { padding: 3px 6px; gap: 3px; flex-wrap: nowrap; overflow-x: auto; }
-            .top-panel input { width: 50px; font-size: 9px; padding: 2px 4px; }
-            .top-panel button { font-size: 9px; padding: 2px 6px; }
-            .top-panel .logo-small { font-size: 12px; }
-            .top-panel .user-name { font-size: 9px; }
-            .top-panel #roomDisplay { font-size: 9px; min-width: 30px; }
-            .top-panel #onlineCount { display: none; }
-            .top-panel #statusText { font-size: 8px; }
-            .top-panel .sep { font-size: 10px; }
-            .color-btn { width: 14px; height: 14px; border-width: 1px; }
-            #sizeSlider { width: 40px; }
-            #sizeLabel { font-size: 8px; min-width: 14px; }
-            #clearBtn { font-size: 9px; padding: 1px 6px; }
-
-            .chat-panel { width: 90px; min-width: 70px; }
-            .chat-panel .chat-header { font-size: 9px; padding: 3px 6px; }
-            .chat-messages { font-size: 10px; padding: 3px 4px; }
-            .chat-input-row { padding: 3px 4px 6px; gap: 2px; }
-            .chat-input-row input { font-size: 10px; padding: 2px 6px; }
-            .chat-input-row button { font-size: 10px; padding: 2px 6px; }
-        }
     </style>
 </head>
 <body>
@@ -272,7 +226,7 @@
         <input class="field" id="authUsername" placeholder="Твоё имя">
         <button class="btn" id="authBtn">🚀 Войти</button>
         <div id="authStatus"></div>
-        <input class="field" id="serverInput" placeholder="Сервер" value="localhost:8080" style="margin-top:12px;font-size:12px;">
+        <input class="field" id="serverInput" placeholder="Сервер" value="risovaluka-risovaluka.up.railway.app" style="margin-top:12px;font-size:12px;">
     </div>
 
     <div id="main">
@@ -374,7 +328,6 @@
                 palette.appendChild(btn);
             });
 
-            // Размер — теперь без отступов
             const sizeSlider = document.createElement('input');
             sizeSlider.id = 'sizeSlider';
             sizeSlider.type = 'range';
@@ -394,7 +347,6 @@
             sizeLabel.textContent = '3px';
             palette.appendChild(sizeLabel);
 
-            // Очистка
             const clearBtn = document.createElement('button');
             clearBtn.id = 'clearBtn';
             clearBtn.textContent = '🗑️';
@@ -479,7 +431,7 @@
         document.addEventListener('touchend', stopDrawing);
 
         // ==========================================
-        // 5. ВЕБСОКЕТ
+        // 5. ВЕБСОКЕТ (С ПОДДЕРЖКОЙ wss://)
         // ==========================================
         let ws = null;
         let connected = false;
@@ -487,18 +439,36 @@
         function connectWebSocket(addr) {
             return new Promise((resolve, reject) => {
                 try {
-                    ws = new WebSocket('ws://' + addr);
-                    ws.onopen = () => resolve();
-                    ws.onerror = (err) => reject(err);
+                    // Автоматически определяем протокол (wss:// для Railway)
+                    let protocol = 'ws://';
+                    if (window.location.protocol === 'https:' || addr.includes('railway.app')) {
+                        protocol = 'wss://';
+                    }
+                    
+                    const wsUrl = protocol + addr;
+                    console.log('🔗 Подключение к:', wsUrl);
+                    
+                    ws = new WebSocket(wsUrl);
+                    ws.onopen = () => {
+                        console.log('🟢 WebSocket подключен');
+                        resolve();
+                    };
+                    ws.onerror = (err) => {
+                        console.log('🔴 WebSocket ошибка:', err);
+                        reject(err);
+                    };
                     ws.onclose = () => {
                         connected = false;
                         setStatus('❌ Соединение потеряно', '#ff3366');
+                        console.log('🔴 WebSocket закрыт');
                     };
                     ws.onmessage = (e) => {
                         try { handleMessage(JSON.parse(e.data)); }
                         catch(err) { console.log('Parse error:', err); }
                     };
-                } catch(e) { reject(e); }
+                } catch(e) {
+                    reject(e);
+                }
             });
         }
 
@@ -523,7 +493,6 @@
                 case 'room_joined':
                     currentRoom = data.room_id;
                     roomUsers = data.users || [];
-                    // Если в списке пользователей нет тебя — добавляем
                     if (!roomUsers.includes(username)) {
                         roomUsers.push(username);
                     }
@@ -553,7 +522,6 @@
                 case 'user_joined':
                 case 'user_left':
                     roomUsers = data.users || [];
-                    // Если мы в комнате, добавляем себя если нас нет
                     if (currentRoom && !roomUsers.includes(username)) {
                         roomUsers.push(username);
                     }
@@ -611,7 +579,7 @@
                 return;
             }
             username = name;
-            const server = document.getElementById('serverInput').value.trim() || 'localhost:8080';
+            const server = document.getElementById('serverInput').value.trim() || 'risovaluka-risovaluka.up.railway.app';
 
             document.getElementById('authStatus').textContent = 'Подключение...';
             document.getElementById('authBtn').disabled = true;
@@ -690,6 +658,7 @@
         // ==========================================
         setTimeout(resizeCanvas, 50);
         console.log('🎨 Рисовалка запущена!');
+        console.log('🌐 Сервер: risovaluka-risovaluka.up.railway.app');
         console.log('1. Введи имя → Войти');
         console.log('2. Введи ID → Создать');
         console.log('3. Друг вводит тот же ID → Войти');
