@@ -152,6 +152,10 @@
             background: #fff;
             touch-action: none;
             display: block;
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
         }
 
         .chat-panel {
@@ -313,8 +317,7 @@
         const ctx = canvas.getContext('2d');
 
         let isDrawing = false;
-        let lastX = 0,
-            lastY = 0;
+        let lastX = 0, lastY = 0;
         let currentColor = '#ff3366';
         let brushSize = 3;
         let username = '';
@@ -323,6 +326,7 @@
         let hasDrawn = false;
         let ws = null;
         let connected = false;
+        let pingInterval = null;
 
         // ==========================================
         // 2. РЕСАЙЗ (КВАДРАТ)
@@ -330,17 +334,11 @@
         function resizeCanvas() {
             const wrapper = document.querySelector('.canvas-wrapper');
             const rect = wrapper.getBoundingClientRect();
-
-            // Вычисляем квадратный размер
             const size = Math.min(rect.width, rect.height) - 10;
-
-            // Устанавливаем размер канваса
-            canvas.width = size;
-            canvas.height = size;
-
-            // Принудительно через CSS
-            canvas.style.width = size + 'px';
-            canvas.style.height = size + 'px';
+            canvas.width = Math.max(200, size);
+            canvas.height = Math.max(200, size);
+            canvas.style.width = canvas.width + 'px';
+            canvas.style.height = canvas.height + 'px';
 
             if (!hasDrawn) {
                 ctx.fillStyle = '#fff';
@@ -441,14 +439,9 @@
                 clientX = e.clientX;
                 clientY = e.clientY;
             }
-
             const x = ((clientX - rect.left) / rect.width) * 100;
             const y = ((clientY - rect.top) / rect.height) * 100;
-
-            return {
-                x: Math.min(100, Math.max(0, x)),
-                y: Math.min(100, Math.max(0, y))
-            };
+            return { x: Math.min(100, Math.max(0, x)), y: Math.min(100, Math.max(0, y)) };
         }
 
         // ==========================================
@@ -456,7 +449,7 @@
         // ==========================================
         function startDrawing(e) {
             e.preventDefault();
-            if (!currentRoom) return;
+            if (!currentRoom || !connected) return;
             isDrawing = true;
             const pos = getPos(e);
             lastX = pos.x;
@@ -465,7 +458,7 @@
 
         function draw(e) {
             e.preventDefault();
-            if (!isDrawing || !currentRoom) return;
+            if (!isDrawing || !currentRoom || !connected) return;
             const pos = getPos(e);
 
             const x1 = (lastX / 100) * canvas.width;
@@ -487,10 +480,8 @@
                 ws.send(JSON.stringify({
                     type: 'draw',
                     room: currentRoom,
-                    x1: lastX,
-                    y1: lastY,
-                    x2: pos.x,
-                    y2: pos.y,
+                    x1: lastX, y1: lastY,
+                    x2: pos.x, y2: pos.y,
                     color: currentColor,
                     size: brushSize
                 }));
@@ -510,7 +501,34 @@
         document.addEventListener('touchend', stopDrawing, { passive: true });
 
         // ==========================================
-        // 6. ВЕБСОКЕТ
+        // 6. ЧАТ
+        // ==========================================
+        function addChatMessage(text, className = 'system') {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = className;
+            div.textContent = text;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            if (container.children.length > 100) container.removeChild(container.firstChild);
+        }
+
+        document.getElementById('chatSend').addEventListener('click', sendChat);
+        document.getElementById('chatInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendChat();
+        });
+
+        function sendChat() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text || !currentRoom || !ws || ws.readyState !== WebSocket.OPEN) return;
+            addChatMessage('💬 Я: ' + text, 'me');
+            ws.send(JSON.stringify({ type: 'chat', room: currentRoom, text: text }));
+            input.value = '';
+        }
+
+        // ==========================================
+        // 7. ВЕБСОКЕТ
         // ==========================================
         function connectWebSocket(addr) {
             return new Promise((resolve, reject) => {
@@ -522,14 +540,31 @@
                     const wsUrl = protocol + addr;
                     console.log('🔗 Подключение к:', wsUrl);
                     ws = new WebSocket(wsUrl);
-                    ws.onopen = () => { console.log('🟢 WebSocket подключен');
-                        resolve(); };
-                    ws.onerror = (err) => { console.log('🔴 WebSocket ошибка:', err);
-                        reject(err); };
-                    ws.onclose = () => { connected = false;
-                        setStatus('❌', '#ff3366'); };
+                    ws.onopen = () => {
+                        console.log('🟢 WebSocket подключен');
+                        // Запускаем пинг каждые 10 секунд
+                        if (pingInterval) clearInterval(pingInterval);
+                        pingInterval = setInterval(() => {
+                            if (ws && ws.readyState === WebSocket.OPEN) {
+                                ws.send(JSON.stringify({ type: 'ping' }));
+                            }
+                        }, 10000);
+                        resolve();
+                    };
+                    ws.onerror = (err) => {
+                        console.log('🔴 WebSocket ошибка:', err);
+                        reject(err);
+                    };
+                    ws.onclose = () => {
+                        connected = false;
+                        setStatus('❌', '#ff3366');
+                        if (pingInterval) clearInterval(pingInterval);
+                        pingInterval = null;
+                        console.log('🔴 WebSocket закрыт');
+                    };
                     ws.onmessage = (e) => {
-                        try { handleMessage(JSON.parse(e.data)); } catch (err) { console.log('Parse error:', err); }
+                        try { handleMessage(JSON.parse(e.data)); }
+                        catch (err) { console.log('Parse error:', err); }
                     };
                 } catch (e) { reject(e); }
             });
@@ -547,9 +582,11 @@
                     createPalette();
                     setTimeout(resizeCanvas, 50);
                     break;
+
                 case 'error':
                     setStatus('❌ ' + data.message, '#ff3366');
                     break;
+
                 case 'room_created':
                 case 'room_joined':
                     currentRoom = data.room_id;
@@ -564,6 +601,7 @@
                     document.getElementById('onlineCount').textContent = '👤' + roomUsers.length;
                     setStatus('🎨', '#00ff88');
                     break;
+
                 case 'room_left':
                     currentRoom = null;
                     roomUsers = [];
@@ -576,20 +614,21 @@
                     document.getElementById('onlineCount').textContent = '👤0';
                     setStatus('✏️', '#8a8aaa');
                     break;
+
                 case 'user_joined':
                 case 'user_left':
                     roomUsers = data.users || [];
                     if (currentRoom && !roomUsers.includes(username)) roomUsers.push(username);
                     document.getElementById('chatUserCount').textContent = roomUsers.length;
                     document.getElementById('onlineCount').textContent = '👤' + roomUsers.length;
-                    addChatMessage('🔄 ' + data.username + (data.type === 'user_joined' ? ' +' : ' -'), 'system');
+                    addChatMessage('🔄 ' + data.username + (data.type === 'user_joined' ? ' присоединился' : ' вышел'), 'system');
                     break;
+
                 case 'draw':
                     const x1 = (data.x1 / 100) * canvas.width;
                     const y1 = (data.y1 / 100) * canvas.height;
                     const x2 = (data.x2 / 100) * canvas.width;
                     const y2 = (data.y2 / 100) * canvas.height;
-
                     ctx.beginPath();
                     ctx.moveTo(x1, y1);
                     ctx.lineTo(x2, y2);
@@ -600,20 +639,27 @@
                     ctx.stroke();
                     hasDrawn = true;
                     break;
+
                 case 'clear':
                     ctx.fillStyle = '#fff';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     hasDrawn = false;
-                    addChatMessage('🗑️ ' + data.from, 'system');
+                    addChatMessage('🗑️ ' + data.from + ' очистил холст', 'system');
                     break;
+
                 case 'chat':
                     addChatMessage('💬 ' + data.from + ': ' + data.text, data.from === username ? 'me' : 'other');
                     break;
+
                 case 'room_update':
                     roomUsers = data.users || [];
                     if (currentRoom && !roomUsers.includes(username)) roomUsers.push(username);
                     document.getElementById('chatUserCount').textContent = roomUsers.length;
                     document.getElementById('onlineCount').textContent = '👤' + roomUsers.length;
+                    break;
+
+                case 'pong':
+                    // просто чтобы не падало соединение
                     break;
             }
         }
@@ -624,7 +670,7 @@
         }
 
         // ==========================================
-        // 7. АВТОРИЗАЦИЯ
+        // 8. АВТОРИЗАЦИЯ
         // ==========================================
         document.getElementById('authBtn').addEventListener('click', async () => {
             const name = document.getElementById('authUsername').value.trim();
@@ -648,7 +694,7 @@
         });
 
         // ==========================================
-        // 8. КОМНАТЫ
+        // 9. КОМНАТЫ
         // ==========================================
         document.getElementById('createBtn').addEventListener('click', () => {
             const roomId = document.getElementById('roomInput').value.trim().toUpperCase();
@@ -675,38 +721,12 @@
         });
 
         // ==========================================
-        // 9. ЧАТ
-        // ==========================================
-        function addChatMessage(text, className = 'system') {
-            const container = document.getElementById('chatMessages');
-            const div = document.createElement('div');
-            div.className = className;
-            div.textContent = text;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            if (container.children.length > 100) container.removeChild(container.firstChild);
-        }
-
-        document.getElementById('chatSend').addEventListener('click', () => {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            if (!text || !currentRoom || !ws) return;
-            addChatMessage('💬 Я: ' + text, 'me');
-            ws.send(JSON.stringify({ type: 'chat', room: currentRoom, text: text }));
-            input.value = '';
-        });
-
-        document.getElementById('chatInput').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') document.getElementById('chatSend').click();
-        });
-
-        // ==========================================
         // 10. ЗАПУСК
         // ==========================================
         setTimeout(resizeCanvas, 100);
-        console.log('🎨 Рисовалка (квадрат) запущена!');
+        console.log('🎨 Рисовалка запущена!');
         console.log('🌐 Адрес: risovaluka-risovaluka.up.railway.app');
-        console.log('📐 Канвас квадратный, размер: ' + canvas.width + 'x' + canvas.height);
+        console.log('💬 Чат работает, пинг каждые 10 секунд');
     </script>
 </body>
 </html>
