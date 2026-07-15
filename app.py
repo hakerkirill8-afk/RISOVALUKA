@@ -1,9 +1,6 @@
 import asyncio
 import json
 import websockets
-import os
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-import threading
 
 online_users = {}
 draw_rooms = {}
@@ -147,11 +144,15 @@ async def handler(websocket):
                     room = data.get('room')
                     if room and room in draw_rooms:
                         for user in draw_rooms[room]:
-                            if user != username and user in online_users:
-                                try:
-                                    await online_users[user].send(json.dumps({'type': 'clear', 'from': username}))
-                                except:
-                                    pass
+                            if user != username:  # 👈 НЕ отправляем тому, кто очистил
+                                if user in online_users:
+                                    try:
+                                        await online_users[user].send(json.dumps({
+                                            'type': 'clear',
+                                            'from': username
+                                        }))
+                                    except:
+                                        pass
                 
                 elif msg_type == 'chat':
                     room = data.get('room')
@@ -170,6 +171,10 @@ async def handler(websocket):
                 
                 elif msg_type == 'get_rooms':
                     await websocket.send(json.dumps({'type': 'room_list', 'rooms': list(draw_rooms.keys())}))
+                
+                elif msg_type == 'ping':
+                    # Отвечаем на пинг
+                    await websocket.send(json.dumps({'type': 'pong'}))
                 
             except json.JSONDecodeError:
                 pass
@@ -206,26 +211,11 @@ async def handler(websocket):
                                 except:
                                     pass
 
-# ===== HTTP-СЕРВЕР ДЛЯ index.html =====
-def run_http():
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    handler = SimpleHTTPRequestHandler
-    httpd = HTTPServer(('0.0.0.0', 8000), handler)
-    print('🌐 HTTP сервер запущен на порту 8000')
-    httpd.serve_forever()
-
-# ===== ЗАПУСК ОБОИХ СЕРВЕРОВ =====
 async def main():
     print("========================================")
-    print("      🎨 РИСОВАЛКА")
+    print("      🎨 РИСОВАЛКА (исправленная)")
     print("========================================")
-    
-    threading.Thread(target=run_http, daemon=True).start()
-    
     async with websockets.serve(handler, "0.0.0.0", 8080):
-        print("🔗 WebSocket сервер запущен на порту 8080")
-        print("🌐 Открой index.html и введи в поле 'Сервер':")
-        print("   risovaluka-risovaluka.up.railway.app")
         await asyncio.Future()
 
 if __name__ == "__main__":
