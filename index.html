@@ -322,23 +322,7 @@
         .chat-input-bottom button:active { transform: scale(0.92); }
         .chat-input-bottom button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* ===== ТЕЛЕФОН — ЧУТЬ ТОЛЩЕ, НО НЕ ЖИРНО ===== */
-        @media (max-width: 600px) {
-            #sizeSlider {
-                height: 4px !important;
-                min-height: 28px !important;
-            }
-            #sizeSlider::-webkit-slider-thumb {
-                width: 20px !important;
-                height: 20px !important;
-            }
-            #sizeSlider::-moz-range-thumb {
-                width: 20px !important;
-                height: 20px !important;
-            }
-        }
-
-        /* ===== АДАПТАЦИЯ МЕНЮ И ЧАТА ===== */
+        /* ===== АДАПТАЦИЯ МЕНЮ И ЧАТА (БЕЗ ПОЛЗУНКА) ===== */
         @media (max-width: 600px) {
             .top-panel { padding: 4px 6px !important; }
             .row-1 { gap: 4px !important; }
@@ -892,7 +876,7 @@
         setTimeout(resizeCanvas, 100);
         console.log('🎨 Рисовалка (чат внизу, ползунок тонкий) запущена!');
         console.log('🌐 Адрес: risovaluka-risovaluka.up.railway.app');
-        console.log('📱 Ползунок тонкий на всех экранах, но удобный для пальца!');
+        console.log('📱 Ползунок тонкий на всех экранах!');
     </script>
 </body>
 </html>
