@@ -159,6 +159,12 @@
             background: #fff;
             touch-action: none;
             display: block;
+            /* ЖЕСТКИЙ КВАДРАТ */
+            width: 100% !important;
+            height: auto !important;
+            aspect-ratio: 1 / 1 !important;
+            max-width: 100%;
+            max-height: 100%;
         }
 
         .chat-panel {
@@ -314,7 +320,7 @@
 
     <script>
         // ==========================================
-        // 1. КАНВАС
+        // 1. КАНВАС (КВАДРАТНЫЙ)
         // ==========================================
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
@@ -331,25 +337,19 @@
         let ws = null;
         let connected = false;
 
-        // Размер канваса в пикселях (фиксированный)
+        // РАЗМЕР КАНВАСА (в пикселях)
         const CANVAS_SIZE = 800;
 
         // ==========================================
-        // 2. РЕСАЙЗ (КВАДРАТ)
+        // 2. РЕСАЙЗ (ПРОСТО СТАВИМ РАЗМЕР)
         // ==========================================
         function resizeCanvas() {
-            const wrapper = document.querySelector('.canvas-wrapper');
-            const rect = wrapper.getBoundingClientRect();
-
-            // Минимальная сторона
-            const size = Math.min(rect.width, rect.height) - 10;
-
+            // Устанавливаем размер канваса
             canvas.width = CANVAS_SIZE;
             canvas.height = CANVAS_SIZE;
 
-            // Отображаем квадратом через CSS
-            canvas.style.width = size + 'px';
-            canvas.style.height = size + 'px';
+            // На всякий случай — квадратный CSS
+            canvas.style.aspectRatio = '1 / 1';
 
             if (!hasDrawn) {
                 ctx.fillStyle = '#fff';
@@ -366,6 +366,8 @@
         }
 
         window.addEventListener('resize', resizeCanvas);
+        // Также вызываем после загрузки
+        setTimeout(resizeCanvas, 100);
 
         // ==========================================
         // 3. ПАЛИТРА
@@ -438,7 +440,7 @@
         }
 
         // ==========================================
-        // 4. КООРДИНАТЫ (В ПРОЦЕНТАХ)
+        // 4. КООРДИНАТЫ В ПРОЦЕНТАХ
         // ==========================================
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -716,7 +718,7 @@
         // ==========================================
         // 10. ЗАПУСК
         // ==========================================
-        setTimeout(resizeCanvas, 50);
+        setTimeout(resizeCanvas, 100);
         console.log('🎨 Рисовалка (квадрат) запущена!');
         console.log('🌐 Адрес: risovaluka-risovaluka.up.railway.app');
     </script>
