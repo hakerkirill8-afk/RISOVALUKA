@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🎨 Рисовалка</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
         body {
             background: #0a0a1a;
             font-family: 'Segoe UI', sans-serif;
@@ -19,6 +26,7 @@
             top: 0;
             left: 0;
         }
+
         #auth {
             display: flex;
             flex-direction: column;
@@ -27,8 +35,15 @@
             height: 100vh;
             padding: 20px;
         }
-        #auth .logo { font-size: 52px; margin-bottom: 8px; }
-        #auth .sub { color: #8a8aaa; font-size: 16px; margin-bottom: 24px; }
+        #auth .logo {
+            font-size: 52px;
+            margin-bottom: 8px;
+        }
+        #auth .sub {
+            color: #8a8aaa;
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
         #auth .field {
             width: 100%;
             max-width: 320px;
@@ -41,7 +56,9 @@
             margin-bottom: 10px;
             outline: none;
         }
-        #auth .field:focus { border-color: #00ff88; }
+        #auth .field:focus {
+            border-color: #00ff88;
+        }
         #auth .btn {
             width: 100%;
             max-width: 320px;
@@ -54,8 +71,15 @@
             font-weight: 700;
             cursor: pointer;
         }
-        #auth .btn:active { transform: scale(0.96); }
-        #authStatus { color: #ff4444; font-size: 14px; margin-top: 10px; min-height: 24px; }
+        #auth .btn:active {
+            transform: scale(0.96);
+        }
+        #authStatus {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 10px;
+            min-height: 24px;
+        }
 
         #main {
             display: none;
@@ -65,6 +89,8 @@
             width: 100vw;
             touch-action: none;
         }
+
+        /* ВЕРХНЯЯ ПАНЕЛЬ — КАК БЫЛА */
         .top-panel {
             display: flex;
             align-items: center;
@@ -77,8 +103,18 @@
             min-height: 40px;
             overflow-x: auto;
         }
-        .top-panel .logo-small { font-size: 16px; font-weight: 700; color: #00ff88; flex-shrink: 0; }
-        .top-panel .user-name { font-size: 12px; color: #00ff88; font-weight: 600; flex-shrink: 0; }
+        .top-panel .logo-small {
+            font-size: 16px;
+            font-weight: 700;
+            color: #00ff88;
+            flex-shrink: 0;
+        }
+        .top-panel .user-name {
+            font-size: 12px;
+            color: #00ff88;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
         .top-panel input {
             padding: 4px 8px;
             background: #0a0a0f;
@@ -93,8 +129,15 @@
             letter-spacing: 1px;
             flex-shrink: 0;
         }
-        .top-panel input:focus { border-color: #00ff88; }
-        .top-panel input::placeholder { text-transform: none; letter-spacing: 0; color: #555; font-size: 9px; }
+        .top-panel input:focus {
+            border-color: #00ff88;
+        }
+        .top-panel input::placeholder {
+            text-transform: none;
+            letter-spacing: 0;
+            color: #555;
+            font-size: 9px;
+        }
         .top-panel button {
             padding: 4px 8px;
             border: none;
@@ -106,23 +149,95 @@
             flex-shrink: 0;
             min-height: 28px;
         }
-        .top-panel button:active { transform: scale(0.92); }
-        #createBtn { background: #00ff88; color: #000; }
-        #joinBtn { background: #4488ff; color: #fff; }
-        #leaveBtn { background: #ff3366; color: #fff; display: none; }
-        #roomDisplay { color: #8a8aaa; font-size: 10px; font-weight: 600; min-width: 40px; flex-shrink: 0; }
-        #roomDisplay.active { color: #00ff88; }
-        #onlineCount { color: #8a8aaa; font-size: 9px; flex-shrink: 0; }
-        #statusText { color: #8a8aaa; font-size: 9px; flex-shrink: 0; }
-        .top-panel .sep { color: #2a2a3e; font-size: 14px; flex-shrink: 0; }
-        #palette { display: flex; gap: 3px; align-items: center; flex-shrink: 0; flex-wrap: nowrap; }
-        .color-btn { width: 18px; height: 18px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; flex-shrink: 0; }
-        .color-btn:active { transform: scale(1.2); }
-        .color-btn.active { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.3); }
-        #sizeSlider { width: 40px; accent-color: #00ff88; cursor: pointer; flex-shrink: 0; }
-        #sizeLabel { font-size: 9px; color: #8a8aaa; min-width: 18px; flex-shrink: 0; }
-        #clearBtn { background: #ff3366; border: none; color: #fff; padding: 2px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; flex-shrink: 0; min-height: 24px; }
-        #clearBtn:active { transform: scale(0.9); }
+        .top-panel button:active {
+            transform: scale(0.92);
+        }
+        #createBtn {
+            background: #00ff88;
+            color: #000;
+        }
+        #joinBtn {
+            background: #4488ff;
+            color: #fff;
+        }
+        #leaveBtn {
+            background: #ff3366;
+            color: #fff;
+            display: none;
+        }
+        #roomDisplay {
+            color: #8a8aaa;
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 40px;
+            flex-shrink: 0;
+        }
+        #roomDisplay.active {
+            color: #00ff88;
+        }
+        #onlineCount {
+            color: #8a8aaa;
+            font-size: 9px;
+            flex-shrink: 0;
+        }
+        #statusText {
+            color: #8a8aaa;
+            font-size: 9px;
+            flex-shrink: 0;
+        }
+        .top-panel .sep {
+            color: #2a2a3e;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        #palette {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+            flex-shrink: 0;
+            flex-wrap: nowrap;
+        }
+        .color-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .color-btn:active {
+            transform: scale(1.2);
+        }
+        .color-btn.active {
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        #sizeSlider {
+            width: 40px;
+            accent-color: #00ff88;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        #sizeLabel {
+            font-size: 9px;
+            color: #8a8aaa;
+            min-width: 18px;
+            flex-shrink: 0;
+        }
+        #clearBtn {
+            background: #ff3366;
+            border: none;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            flex-shrink: 0;
+            min-height: 24px;
+        }
+        #clearBtn:active {
+            transform: scale(0.9);
+        }
 
         .main-area {
             display: flex;
@@ -131,6 +246,7 @@
             height: 100%;
             touch-action: none;
         }
+
         .canvas-wrapper {
             flex: 1;
             display: flex;
@@ -148,10 +264,14 @@
             border-radius: 8px;
             cursor: crosshair;
             background: #fff;
-            width: 100%;
-            height: 100%;
             touch-action: none;
             display: block;
+            /* Канвас будет квадратным, сохраняя пропорции */
+            aspect-ratio: 1 / 1;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
         }
 
         .chat-panel {
@@ -175,7 +295,9 @@
             justify-content: space-between;
             align-items: center;
         }
-        .chat-panel .chat-header span { color: #00ff88; }
+        .chat-panel .chat-header span {
+            color: #00ff88;
+        }
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -184,11 +306,24 @@
             line-height: 1.4;
             min-height: 0;
         }
-        .chat-messages::-webkit-scrollbar { width: 2px; }
-        .chat-messages::-webkit-scrollbar-thumb { background: #00ff88; border-radius: 2px; }
-        .chat-messages .me { color: #00ff88; }
-        .chat-messages .other { color: #ff6688; }
-        .chat-messages .system { color: #ffaa44; font-style: italic; font-size: 10px; }
+        .chat-messages::-webkit-scrollbar {
+            width: 2px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #00ff88;
+            border-radius: 2px;
+        }
+        .chat-messages .me {
+            color: #00ff88;
+        }
+        .chat-messages .other {
+            color: #ff6688;
+        }
+        .chat-messages .system {
+            color: #ffaa44;
+            font-style: italic;
+            font-size: 10px;
+        }
 
         .chat-input-row {
             display: flex;
@@ -208,8 +343,13 @@
             outline: none;
             min-width: 0;
         }
-        .chat-input-row input:focus { border-color: #00ff88; }
-        .chat-input-row input:disabled { opacity: 0.4; cursor: not-allowed; }
+        .chat-input-row input:focus {
+            border-color: #00ff88;
+        }
+        .chat-input-row input:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
         .chat-input-row button {
             padding: 4px 10px;
             background: #00ff88;
@@ -222,44 +362,145 @@
             flex-shrink: 0;
             min-height: 28px;
         }
-        .chat-input-row button:active { transform: scale(0.92); }
-        .chat-input-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .chat-input-row button:active {
+            transform: scale(0.92);
+        }
+        .chat-input-row button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
 
         @media (max-width: 480px) {
-            .chat-panel { width: 100px; min-width: 70px; }
-            .top-panel { gap: 3px; padding: 3px 5px; min-height: 34px; }
-            .top-panel input { width: 44px; font-size: 9px; padding: 2px 4px; }
-            .top-panel button { font-size: 8px; padding: 2px 6px; min-height: 22px; }
-            .top-panel .logo-small { font-size: 12px; }
-            .top-panel .user-name { font-size: 9px; }
-            .top-panel #roomDisplay { font-size: 8px; min-width: 30px; }
-            .top-panel #onlineCount { font-size: 7px; }
-            .top-panel #statusText { font-size: 7px; }
-            .top-panel .sep { font-size: 10px; }
-            .color-btn { width: 14px; height: 14px; border-width: 1.5px; }
-            #sizeSlider { width: 30px; }
-            #sizeLabel { font-size: 7px; min-width: 14px; }
-            #clearBtn { font-size: 9px; padding: 1px 6px; min-height: 20px; }
-            .chat-panel .chat-header { font-size: 8px; padding: 3px 5px; }
-            .chat-messages { font-size: 9px; padding: 3px 4px; }
-            .chat-input-row { padding: 3px 4px 6px; gap: 2px; }
-            .chat-input-row input { font-size: 9px; padding: 3px 6px; }
-            .chat-input-row button { font-size: 9px; padding: 3px 8px; min-height: 24px; }
+            .chat-panel {
+                width: 100px;
+                min-width: 70px;
+            }
+            .top-panel {
+                gap: 3px;
+                padding: 3px 5px;
+                min-height: 34px;
+            }
+            .top-panel input {
+                width: 44px;
+                font-size: 9px;
+                padding: 2px 4px;
+            }
+            .top-panel button {
+                font-size: 8px;
+                padding: 2px 6px;
+                min-height: 22px;
+            }
+            .top-panel .logo-small {
+                font-size: 12px;
+            }
+            .top-panel .user-name {
+                font-size: 9px;
+            }
+            .top-panel #roomDisplay {
+                font-size: 8px;
+                min-width: 30px;
+            }
+            .top-panel #onlineCount {
+                font-size: 7px;
+            }
+            .top-panel #statusText {
+                font-size: 7px;
+            }
+            .top-panel .sep {
+                font-size: 10px;
+            }
+            .color-btn {
+                width: 14px;
+                height: 14px;
+                border-width: 1.5px;
+            }
+            #sizeSlider {
+                width: 30px;
+            }
+            #sizeLabel {
+                font-size: 7px;
+                min-width: 14px;
+            }
+            #clearBtn {
+                font-size: 9px;
+                padding: 1px 6px;
+                min-height: 20px;
+            }
+            .chat-panel .chat-header {
+                font-size: 8px;
+                padding: 3px 5px;
+            }
+            .chat-messages {
+                font-size: 9px;
+                padding: 3px 4px;
+            }
+            .chat-input-row {
+                padding: 3px 4px 6px;
+                gap: 2px;
+            }
+            .chat-input-row input {
+                font-size: 9px;
+                padding: 3px 6px;
+            }
+            .chat-input-row button {
+                font-size: 9px;
+                padding: 3px 8px;
+                min-height: 24px;
+            }
         }
         @media (max-width: 380px) {
-            .chat-panel { width: 70px; min-width: 55px; }
-            .top-panel input { width: 36px; font-size: 7px; }
-            .top-panel button { font-size: 7px; padding: 1px 4px; min-height: 18px; }
-            .top-panel .logo-small { font-size: 10px; }
-            .top-panel .user-name { font-size: 7px; }
-            .color-btn { width: 12px; height: 12px; }
-            #sizeSlider { width: 24px; }
-            #sizeLabel { font-size: 6px; min-width: 10px; }
-            #clearBtn { font-size: 7px; padding: 1px 4px; min-height: 16px; }
-            .chat-panel .chat-header { font-size: 7px; padding: 2px 4px; }
-            .chat-messages { font-size: 8px; padding: 2px 3px; }
-            .chat-input-row input { font-size: 8px; padding: 2px 4px; }
-            .chat-input-row button { font-size: 8px; padding: 2px 6px; min-height: 20px; }
+            .chat-panel {
+                width: 70px;
+                min-width: 55px;
+            }
+            .top-panel input {
+                width: 36px;
+                font-size: 7px;
+            }
+            .top-panel button {
+                font-size: 7px;
+                padding: 1px 4px;
+                min-height: 18px;
+            }
+            .top-panel .logo-small {
+                font-size: 10px;
+            }
+            .top-panel .user-name {
+                font-size: 7px;
+            }
+            .color-btn {
+                width: 12px;
+                height: 12px;
+            }
+            #sizeSlider {
+                width: 24px;
+            }
+            #sizeLabel {
+                font-size: 6px;
+                min-width: 10px;
+            }
+            #clearBtn {
+                font-size: 7px;
+                padding: 1px 4px;
+                min-height: 16px;
+            }
+            .chat-panel .chat-header {
+                font-size: 7px;
+                padding: 2px 4px;
+            }
+            .chat-messages {
+                font-size: 8px;
+                padding: 2px 3px;
+            }
+            .chat-input-row input {
+                font-size: 8px;
+                padding: 2px 4px;
+            }
+            .chat-input-row button {
+                font-size: 8px;
+                padding: 2px 6px;
+                min-height: 20px;
+            }
         }
     </style>
 </head>
@@ -307,13 +548,14 @@
 
     <script>
         // ==========================================
-        // 1. КАНВАС
+        // 1. КАНВАС — ТЕПЕРЬ РАБОТАЕТ В КВАДРАТЕ
         // ==========================================
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
 
         let isDrawing = false;
-        let lastX = 0, lastY = 0;
+        let lastX = 0,
+            lastY = 0;
         let currentColor = '#ff3366';
         let brushSize = 3;
         let username = '';
@@ -323,14 +565,29 @@
         let ws = null;
         let connected = false;
 
+        // Размер квадрата (в пикселях)
+        let canvasSize = 600;
+
         // ==========================================
-        // 2. РЕСАЙЗ КАНВАСА
+        // 2. РЕСАЙЗ КАНВАСА (КВАДРАТ)
         // ==========================================
         function resizeCanvas() {
             const wrapper = document.querySelector('.canvas-wrapper');
             const rect = wrapper.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.height;
+
+            // Берём минимальную сторону
+            const size = Math.min(rect.width, rect.height) - 10;
+
+            // Ставим размер канваса в пикселях (фиксированный для координат)
+            canvasSize = Math.max(200, Math.min(size, 800));
+
+            canvas.width = canvasSize;
+            canvas.height = canvasSize;
+
+            // Стили для отображения (CSS уже делает квадрат через aspect-ratio)
+            canvas.style.width = canvasSize + 'px';
+            canvas.style.height = canvasSize + 'px';
+
             if (!hasDrawn) {
                 ctx.fillStyle = '#fff';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -418,7 +675,7 @@
         }
 
         // ==========================================
-        // 4. РИСОВАНИЕ (С КООРДИНАТАМИ В ПРОЦЕНТАХ)
+        // 4. РИСОВАНИЕ (В КВАДРАТНЫХ КООРДИНАТАХ)
         // ==========================================
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -430,10 +687,14 @@
                 clientX = e.clientX;
                 clientY = e.clientY;
             }
-            // Координаты в ПРОЦЕНТАХ (0-100%)
-            const x = ((clientX - rect.left) / rect.width) * 100;
-            const y = ((clientY - rect.top) / rect.height) * 100;
-            return { x: Math.min(100, Math.max(0, x)), y: Math.min(100, Math.max(0, y)) };
+            // Координаты относительно канваса (0-1)
+            const x = (clientX - rect.left) / rect.width;
+            const y = (clientY - rect.top) / rect.height;
+            // Переводим в пиксели канваса
+            return {
+                x: Math.min(1, Math.max(0, x)) * canvas.width,
+                y: Math.min(1, Math.max(0, y)) * canvas.height
+            };
         }
 
         function startDrawing(e) {
@@ -450,16 +711,9 @@
             if (!isDrawing || !currentRoom) return;
             const pos = getPos(e);
 
-            // Рисуем на своём канвасе (переводим % в пиксели)
-            const rect = canvas.getBoundingClientRect();
-            const x1_px = (lastX / 100) * rect.width;
-            const y1_px = (lastY / 100) * rect.height;
-            const x2_px = (pos.x / 100) * rect.width;
-            const y2_px = (pos.y / 100) * rect.height;
-
             ctx.beginPath();
-            ctx.moveTo(x1_px, y1_px);
-            ctx.lineTo(x2_px, y2_px);
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
             ctx.strokeStyle = currentColor;
             ctx.lineWidth = brushSize;
             ctx.lineCap = 'round';
@@ -467,13 +721,15 @@
             ctx.stroke();
             hasDrawn = true;
 
-            // Отправляем ПРОЦЕНТЫ
+            // Отправляем в ПРОЦЕНТАХ (от 0 до 1)
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: 'draw',
                     room: currentRoom,
-                    x1: lastX, y1: lastY,
-                    x2: pos.x, y2: pos.y,
+                    x1: lastX / canvas.width,
+                    y1: lastY / canvas.height,
+                    x2: pos.x / canvas.width,
+                    y2: pos.y / canvas.height,
                     color: currentColor,
                     size: brushSize
                 }));
@@ -568,12 +824,11 @@
                     addChatMessage('🔄 ' + data.username + (data.type === 'user_joined' ? ' +' : ' -'), 'system');
                     break;
                 case 'draw':
-                    // Получаем ПРОЦЕНТЫ и переводим в пиксели
-                    const rect = canvas.getBoundingClientRect();
-                    const x1 = (data.x1 / 100) * rect.width;
-                    const y1 = (data.y1 / 100) * rect.height;
-                    const x2 = (data.x2 / 100) * rect.width;
-                    const y2 = (data.y2 / 100) * rect.height;
+                    // Получаем координаты в ПРОЦЕНТАХ (0-1) и переводим в пиксели
+                    const x1 = data.x1 * canvas.width;
+                    const y1 = data.y1 * canvas.height;
+                    const x2 = data.x2 * canvas.width;
+                    const y2 = data.y2 * canvas.height;
 
                     ctx.beginPath();
                     ctx.moveTo(x1, y1);
@@ -689,9 +944,9 @@
         // 9. ЗАПУСК
         // ==========================================
         setTimeout(resizeCanvas, 50);
-        console.log('🎨 Рисовалка (проценты) запущена!');
+        console.log('🎨 Рисовалка (квадрат) запущена!');
         console.log('🌐 Адрес: risovaluka-risovaluka.up.railway.app');
-        console.log('📱 Теперь координаты синхронизированы!');
+        console.log('📱 Теперь рисунок не съезжает!');
     </script>
 </body>
 </html>
