@@ -27,7 +27,6 @@
             left: 0;
         }
 
-        /* ===== АВТОРИЗАЦИЯ ===== */
         #auth {
             display: flex;
             flex-direction: column;
@@ -66,7 +65,6 @@
         #auth .btn:active { transform: scale(0.96); }
         #authStatus { color: #ff4444; font-size: 14px; margin-top: 10px; min-height: 24px; }
 
-        /* ===== ОСНОВНОЙ ЭКРАН ===== */
         #main {
             display: none;
             flex-direction: column;
@@ -76,7 +74,7 @@
             touch-action: none;
         }
 
-        /* ===== МЕНЮ (3 СТРОКИ) ===== */
+        /* ===== МЕНЮ (3 СТРОКИ НА ВСЕХ ЭКРАНАХ) ===== */
         .top-panel {
             display: flex;
             flex-direction: column;
@@ -87,7 +85,6 @@
             gap: 4px;
         }
 
-        /* СТРОКА 1: Имя + Комната + Кнопки */
         .row-1 {
             display: flex;
             align-items: center;
@@ -166,7 +163,6 @@
             flex-shrink: 0;
         }
 
-        /* СТРОКА 2: ЦВЕТА (ВСЕ) */
         .row-2 {
             display: flex;
             align-items: center;
@@ -196,7 +192,6 @@
         .color-btn:active { transform: scale(1.2); }
         .color-btn.active { border-color: #fff; box-shadow: 0 0 12px rgba(255,255,255,0.3); }
 
-        /* СТРОКА 3: РАЗМЕР + ОЧИСТКА */
         .row-3 {
             display: flex;
             align-items: center;
@@ -296,7 +291,7 @@
             object-fit: contain;
         }
 
-        /* ===== ЧАТ (НЕ ТРОГАЕМ) ===== */
+        /* ===== ЧАТ ===== */
         .chat-panel {
             width: 140px;
             min-width: 100px;
@@ -368,45 +363,143 @@
         .chat-input-row button:active { transform: scale(0.92); }
         .chat-input-row button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
-        @media (max-width: 480px) {
-            .chat-panel { width: 100px; min-width: 70px; }
-            .top-panel { padding: 3px 6px; gap: 3px; }
-            .row-1 { gap: 4px; }
-            .row-1 input { width: 44px; font-size: 10px; padding: 3px 5px; }
-            .row-1 button { font-size: 10px; padding: 3px 8px; min-height: 24px; }
-            .row-1 .logo-small { font-size: 14px; }
-            .row-1 .user-name { font-size: 10px; }
-            .row-1 #roomDisplay { font-size: 10px; min-width: 30px; }
-            .row-1 #onlineCount { font-size: 9px; }
-            .row-1 #statusText { font-size: 9px; }
-            .row-1 .sep { font-size: 14px; }
-
-            .color-btn { width: 20px; height: 20px; }
-            #sizeSlider { min-height: 4px; }
-            #sizeLabel { font-size: 10px; min-width: 24px; }
-            #clearBtn { font-size: 11px; padding: 3px 10px; min-height: 24px; }
-
-            .chat-panel .chat-header { font-size: 8px; padding: 3px 5px; }
-            .chat-messages { font-size: 9px; padding: 3px 4px; }
-            .chat-input-row { padding: 3px 4px 6px; gap: 2px; }
-            .chat-input-row input { font-size: 9px; padding: 3px 6px; }
-            .chat-input-row button { font-size: 9px; padding: 3px 8px; min-height: 24px; }
+        /* ===== АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНА ===== */
+        @media (max-width: 600px) {
+            .top-panel {
+                flex-direction: column !important;
+                gap: 4px !important;
+                padding: 6px 8px !important;
+            }
+            .row-1, .row-2, .row-3 {
+                width: 100% !important;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 4px !important;
+            }
+            .row-2 .label {
+                display: none !important;
+            }
+            .row-3 .label {
+                display: none !important;
+            }
+            #palette {
+                flex-wrap: wrap !important;
+                gap: 4px !important;
+            }
+            .color-btn {
+                width: 20px !important;
+                height: 20px !important;
+            }
+            #sizeSlider {
+                flex: 1 !important;
+                min-width: 60px !important;
+            }
+            #clearBtn {
+                padding: 4px 12px !important;
+                font-size: 12px !important;
+            }
+            .chat-panel {
+                width: 100px !important;
+                min-width: 70px !important;
+            }
+            .chat-messages {
+                font-size: 9px !important;
+                padding: 3px 4px !important;
+            }
+            .chat-input-row input {
+                font-size: 9px !important;
+                padding: 3px 6px !important;
+            }
+            .chat-input-row button {
+                font-size: 9px !important;
+                padding: 3px 8px !important;
+                min-height: 24px !important;
+            }
+            .row-1 input {
+                font-size: 10px !important;
+                padding: 3px 5px !important;
+                width: 44px !important;
+            }
+            .row-1 button {
+                font-size: 10px !important;
+                padding: 3px 8px !important;
+                min-height: 24px !important;
+            }
+            .row-1 .logo-small {
+                font-size: 14px !important;
+            }
+            .row-1 .user-name {
+                font-size: 10px !important;
+            }
+            .row-1 #roomDisplay {
+                font-size: 10px !important;
+                min-width: 30px !important;
+            }
+            .row-1 #onlineCount {
+                font-size: 9px !important;
+            }
+            .row-1 #statusText {
+                font-size: 9px !important;
+            }
+            .row-1 .sep {
+                font-size: 14px !important;
+            }
+            #sizeLabel {
+                font-size: 10px !important;
+                min-width: 24px !important;
+            }
         }
 
-        @media (max-width: 380px) {
-            .chat-panel { width: 70px; min-width: 55px; }
-            .row-1 input { width: 36px; font-size: 9px; }
-            .row-1 button { font-size: 9px; padding: 2px 6px; min-height: 20px; }
-            .row-1 .logo-small { font-size: 12px; }
-            .row-1 .user-name { font-size: 9px; }
-            .color-btn { width: 18px; height: 18px; }
-            #sizeLabel { font-size: 9px; min-width: 20px; }
-            #clearBtn { font-size: 10px; padding: 2px 8px; min-height: 20px; }
-            .chat-panel .chat-header { font-size: 7px; padding: 2px 4px; }
-            .chat-messages { font-size: 8px; padding: 2px 3px; }
-            .chat-input-row input { font-size: 8px; padding: 2px 4px; }
-            .chat-input-row button { font-size: 8px; padding: 2px 6px; min-height: 20px; }
+        @media (max-width: 400px) {
+            .chat-panel {
+                width: 70px !important;
+                min-width: 55px !important;
+            }
+            .row-1 input {
+                width: 36px !important;
+                font-size: 9px !important;
+            }
+            .row-1 button {
+                font-size: 9px !important;
+                padding: 2px 6px !important;
+                min-height: 20px !important;
+            }
+            .row-1 .logo-small {
+                font-size: 12px !important;
+            }
+            .row-1 .user-name {
+                font-size: 9px !important;
+            }
+            .color-btn {
+                width: 18px !important;
+                height: 18px !important;
+            }
+            #sizeLabel {
+                font-size: 9px !important;
+                min-width: 20px !important;
+            }
+            #clearBtn {
+                font-size: 10px !important;
+                padding: 2px 8px !important;
+                min-height: 20px !important;
+            }
+            .chat-panel .chat-header {
+                font-size: 7px !important;
+                padding: 2px 4px !important;
+            }
+            .chat-messages {
+                font-size: 8px !important;
+                padding: 2px 3px !important;
+            }
+            .chat-input-row input {
+                font-size: 8px !important;
+                padding: 2px 4px !important;
+            }
+            .chat-input-row button {
+                font-size: 8px !important;
+                padding: 2px 6px !important;
+                min-height: 20px !important;
+            }
         }
     </style>
 </head>
@@ -422,7 +515,6 @@
 
     <div id="main">
         <div class="top-panel">
-            <!-- СТРОКА 1: Имя + Комната + Кнопки -->
             <div class="row-1">
                 <span class="logo-small">🎨</span>
                 <span class="user-name" id="userNameDisplay">—</span>
@@ -433,17 +525,15 @@
                 <button id="leaveBtn">🚪 Выйти</button>
                 <span class="sep">|</span>
                 <span id="roomDisplay">Нет</span>
-                <span id="onlineCount">👤 0</span>
+                <span id="onlineCount">👤0</span>
                 <span id="statusText">✏️</span>
             </div>
 
-            <!-- СТРОКА 2: ЦВЕТА -->
             <div class="row-2">
                 <span class="label">Цвет:</span>
                 <div id="palette"></div>
             </div>
 
-            <!-- СТРОКА 3: РАЗМЕР + ОЧИСТКА -->
             <div class="row-3">
                 <span class="label">Размер:</span>
                 <div class="size-group">
@@ -459,7 +549,7 @@
                 <canvas id="canvas"></canvas>
             </div>
             <div class="chat-panel">
-                <div class="chat-header"><span>💬 Чат</span><span id="chatUserCount">0</span></div>
+                <div class="chat-header"><span>💬</span><span id="chatUserCount">0</span></div>
                 <div class="chat-messages" id="chatMessages"></div>
                 <div class="chat-input-row">
                     <input id="chatInput" placeholder="..." disabled inputmode="text">
@@ -560,7 +650,6 @@
         }
 
         sizeSlider.addEventListener('input', updateBrushSize);
-        sizeSlider.addEventListener('touchstart', (e) => {}, { passive: true });
 
         // ==========================================
         // 5. КООРДИНАТЫ (В ПРОЦЕНТАХ)
@@ -883,9 +972,9 @@
         // 12. ЗАПУСК
         // ==========================================
         setTimeout(resizeCanvas, 100);
-        console.log('🎨 Рисовалка (новое меню) запущена!');
+        console.log('🎨 Рисовалка запущена!');
         console.log('🌐 Адрес: risovaluka-risovaluka.up.railway.app');
-        console.log('📐 Меню разделено на 3 строки');
+        console.log('📱 Телефон — 3 строки меню!');
     </script>
 </body>
 </html>
