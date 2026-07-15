@@ -217,16 +217,15 @@ def run_http():
 # ===== ЗАПУСК ОБОИХ СЕРВЕРОВ =====
 async def main():
     print("========================================")
-    print("      🎨 РИСОВАЛКА (Railway)")
+    print("      🎨 РИСОВАЛКА")
     print("========================================")
     
-    # Запускаем HTTP-сервер в отдельном потоке
     threading.Thread(target=run_http, daemon=True).start()
     
-    # Запускаем WebSocket-сервер
     async with websockets.serve(handler, "0.0.0.0", 8080):
         print("🔗 WebSocket сервер запущен на порту 8080")
-        print("🌐 Сайт доступен по адресу: https://risovaluka-risovaluka.up.railway.app")
+        print("🌐 Открой index.html и введи в поле 'Сервер':")
+        print("   risovaluka-risovaluka.up.railway.app")
         await asyncio.Future()
 
 if __name__ == "__main__":
