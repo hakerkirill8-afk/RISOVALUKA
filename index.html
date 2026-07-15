@@ -74,7 +74,7 @@
             touch-action: none;
         }
 
-        /* ===== МЕНЮ (3 СТРОКИ НА ВСЕХ ЭКРАНАХ) ===== */
+        /* ===== МЕНЮ ===== */
         .top-panel {
             display: flex;
             flex-direction: column;
@@ -363,23 +363,20 @@
         .chat-input-row button:active { transform: scale(0.92); }
         .chat-input-row button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* ===== АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНА ===== */
+        /* ===== ТЕЛЕФОН — 3 СТРОКИ ===== */
         @media (max-width: 600px) {
             .top-panel {
-                flex-direction: column !important;
-                gap: 4px !important;
+                display: block !important;
                 padding: 6px 8px !important;
             }
             .row-1, .row-2, .row-3 {
-                width: 100% !important;
                 display: flex !important;
                 flex-wrap: wrap !important;
                 gap: 4px !important;
+                margin-bottom: 4px !important;
+                width: 100% !important;
             }
-            .row-2 .label {
-                display: none !important;
-            }
-            .row-3 .label {
+            .row-2 .label, .row-3 .label {
                 display: none !important;
             }
             #palette {
@@ -397,23 +394,7 @@
             #clearBtn {
                 padding: 4px 12px !important;
                 font-size: 12px !important;
-            }
-            .chat-panel {
-                width: 100px !important;
-                min-width: 70px !important;
-            }
-            .chat-messages {
-                font-size: 9px !important;
-                padding: 3px 4px !important;
-            }
-            .chat-input-row input {
-                font-size: 9px !important;
-                padding: 3px 6px !important;
-            }
-            .chat-input-row button {
-                font-size: 9px !important;
-                padding: 3px 8px !important;
-                min-height: 24px !important;
+                min-height: 28px !important;
             }
             .row-1 input {
                 font-size: 10px !important;
@@ -423,31 +404,23 @@
             .row-1 button {
                 font-size: 10px !important;
                 padding: 3px 8px !important;
-                min-height: 24px !important;
+                min-height: 28px !important;
             }
-            .row-1 .logo-small {
-                font-size: 14px !important;
+            .row-1 .logo-small { font-size: 14px !important; }
+            .row-1 .user-name { font-size: 10px !important; }
+            .row-1 #roomDisplay { font-size: 10px !important; min-width: 30px !important; }
+            .row-1 #onlineCount { font-size: 9px !important; }
+            .row-1 #statusText { font-size: 9px !important; }
+            .row-1 .sep { font-size: 14px !important; }
+            #sizeLabel { font-size: 10px !important; min-width: 24px !important; }
+            .chat-panel {
+                width: 100px !important;
+                min-width: 70px !important;
             }
-            .row-1 .user-name {
-                font-size: 10px !important;
-            }
-            .row-1 #roomDisplay {
-                font-size: 10px !important;
-                min-width: 30px !important;
-            }
-            .row-1 #onlineCount {
-                font-size: 9px !important;
-            }
-            .row-1 #statusText {
-                font-size: 9px !important;
-            }
-            .row-1 .sep {
-                font-size: 14px !important;
-            }
-            #sizeLabel {
-                font-size: 10px !important;
-                min-width: 24px !important;
-            }
+            .chat-messages { font-size: 9px !important; padding: 3px 4px !important; }
+            .chat-input-row input { font-size: 9px !important; padding: 3px 6px !important; }
+            .chat-input-row button { font-size: 9px !important; padding: 3px 8px !important; min-height: 24px !important; }
+            .chat-panel .chat-header { font-size: 8px !important; padding: 3px 5px !important; }
         }
 
         @media (max-width: 400px) {
@@ -464,42 +437,22 @@
                 padding: 2px 6px !important;
                 min-height: 20px !important;
             }
-            .row-1 .logo-small {
-                font-size: 12px !important;
-            }
-            .row-1 .user-name {
-                font-size: 9px !important;
-            }
+            .row-1 .logo-small { font-size: 12px !important; }
+            .row-1 .user-name { font-size: 9px !important; }
             .color-btn {
                 width: 18px !important;
                 height: 18px !important;
             }
-            #sizeLabel {
-                font-size: 9px !important;
-                min-width: 20px !important;
-            }
+            #sizeLabel { font-size: 9px !important; min-width: 20px !important; }
             #clearBtn {
                 font-size: 10px !important;
                 padding: 2px 8px !important;
                 min-height: 20px !important;
             }
-            .chat-panel .chat-header {
-                font-size: 7px !important;
-                padding: 2px 4px !important;
-            }
-            .chat-messages {
-                font-size: 8px !important;
-                padding: 2px 3px !important;
-            }
-            .chat-input-row input {
-                font-size: 8px !important;
-                padding: 2px 4px !important;
-            }
-            .chat-input-row button {
-                font-size: 8px !important;
-                padding: 2px 6px !important;
-                min-height: 20px !important;
-            }
+            .chat-panel .chat-header { font-size: 7px !important; padding: 2px 4px !important; }
+            .chat-messages { font-size: 8px !important; padding: 2px 3px !important; }
+            .chat-input-row input { font-size: 8px !important; padding: 2px 4px !important; }
+            .chat-input-row button { font-size: 8px !important; padding: 2px 6px !important; min-height: 20px !important; }
         }
     </style>
 </head>
@@ -580,7 +533,7 @@
         let pingInterval = null;
 
         // ==========================================
-        // 2. РЕСАЙЗ (КВАДРАТ)
+        // 2. РЕСАЙЗ
         // ==========================================
         function resizeCanvas() {
             const wrapper = document.querySelector('.canvas-wrapper');
@@ -639,7 +592,7 @@
         }
 
         // ==========================================
-        // 4. РАЗМЕР КИСТИ
+        // 4. РАЗМЕР
         // ==========================================
         const sizeSlider = document.getElementById('sizeSlider');
         const sizeLabel = document.getElementById('sizeLabel');
@@ -652,7 +605,7 @@
         sizeSlider.addEventListener('input', updateBrushSize);
 
         // ==========================================
-        // 5. КООРДИНАТЫ (В ПРОЦЕНТАХ)
+        // 5. КООРДИНАТЫ
         // ==========================================
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
